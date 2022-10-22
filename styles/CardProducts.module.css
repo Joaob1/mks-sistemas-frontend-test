@@ -1,0 +1,62 @@
+.cardProduct{
+    width: 21.7rem;
+    height: 28.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-white);
+    box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.135216);
+    border-radius: 0.8rem;
+}
+.cardProduct div{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.1rem 0 1.4rem;
+    margin-bottom: 0.4rem;
+}
+.name{
+    max-width: 12.4rem;
+    color: var(--color-text-description);
+    font-weight: 400;
+    font-size: 1.6rem;
+    line-height: 1.9rem;
+    text-align: left;
+}
+.price{
+    padding: 0.4rem 0.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-background-price);
+    color: var(--color-white);
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+}
+.description{
+    max-width: 88%;
+    font-weight: 300;
+    font-size: 1.0rem;
+    line-height: 1.2rem;
+    color: var(--color-text-description);
+}
+.comprar{
+    all: unset;
+    cursor: pointer;
+    padding: 0.9rem 0;
+    gap: 1.4rem;
+    background-color: var(--color-blue);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    border-radius: 0 0 0.8rem 0.8rem;
+    font-weight: 600;
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+    color: var(--color-white);
+}

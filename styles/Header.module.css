@@ -1,0 +1,48 @@
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 10.1rem;
+    padding: 0 8.8rem 0 6.5rem;
+    background-color: var(--color-blue);
+    margin-bottom: 11.6rem;
+}
+.logo{
+    display: flex;
+    align-items: center;
+    color: var(--color-white);
+}
+.logo_mks{
+    font-weight: 600;
+    font-size: 4rem;
+    line-height: 1.9rem;
+    margin-right: 1rem;
+}
+.logo_sistemas{
+    font-weight: 300;
+    font-size: 2rem;
+    line-height: 1.9rem;
+}
+.cart{
+    cursor: pointer;
+    width: 9rem;
+    height: 4.5rem;
+    background-color: var(--color-white);
+    border-radius: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.7rem 0 1.5rem;
+    transform: scale(1);
+    transition: transform 0.4s ease-in-out;
+}
+.cart span{
+    font-weight: 700;
+    font-size: 1.8rem;
+    line-height: 2.2rem;
+}
+.itemAdd{
+    transform: scale(1.1);
+    transition: transform 0.4s ease-in-out;
+}
