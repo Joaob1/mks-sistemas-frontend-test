@@ -1,10 +1,17 @@
 import "@testing-library/jest-dom";
 import "@testing-library/jest-dom/extend-expect";
-import { render, fireEvent, RenderResult } from "@testing-library/react";
+import {
+  render,
+  fireEvent,
+  RenderResult,
+  cleanup,
+  waitFor,
+  getAllByTestId,
+} from "@testing-library/react";
 import Home from "pages";
 import { Provider } from "react-redux";
 import { store } from "redux/store";
-
+import getValueFromItem from "utils/getValuesFromItem";
 describe("Homepage", () => {
   let app: RenderResult;
 
@@ -15,24 +22,18 @@ describe("Homepage", () => {
       </Provider>
     );
   });
-
   it("Should increase items amount when fire the buy button", async () => {
     const countItems = await app.findByTestId("countItems");
-    const buyButton = await app.findAllByText("COMPRAR");
+    const buyButton = await waitFor(() => app.getAllByTestId("buyButton")[0]);
+    expect(countItems).toBeInTheDocument();
 
     expect(Number(countItems.textContent)).toBe(0);
 
-    let valueCountItems = 0;
+    expect(buyButton).toBeInTheDocument();
 
-    buyButton.forEach((button) => {
-      expect(button).toBeInTheDocument();
+    fireEvent.click(buyButton);
 
-      fireEvent.click(button);
-
-      valueCountItems++;
-
-      expect(Number(countItems.textContent)).toBe(valueCountItems);
-    });
+    expect(Number(countItems.textContent)).toBe(1);
   });
 
   it("Should render a sidebar when click on the cart div", async () => {
@@ -45,60 +46,125 @@ describe("Homepage", () => {
     expect(sidebar).toBeInTheDocument();
   });
 
-  it(`Should render a sidebar Item when fire the buy button,
-      increase the amount of itens when fire the increase button
-      decrease the amount of itens when fire the decrease button,
-      unmount him when decrease the amount of itens to 0,
-      and unmount him when fire the clear button,
-       `, async () => {
+  it("Should unmount the sidebar when click the close button", async () => {
     const cartDiv = await app.findByTestId("cartDiv");
+
     fireEvent.click(cartDiv);
-    const buyButton = await app.findAllByText("COMPRAR");
-    buyButton.forEach(async (button) => {
-      fireEvent.click(button);
-      const amount = await app.findByTestId("amount");
-      expect(amount).tobe(1);
-      // Should render a sidebar Item when fire the buy button
-      const sidebarItem = await app.findByTestId("sidebarItem");
-      expect(sidebarItem).toBeInTheDocument();
-
-      // increase the amount of itens when fire the increase button
-      const increaseButton = await app.findByTestId("Increase button");
-      expect(increaseButton).toBeInTheDocument();
-      fireEvent.click(increaseButton);
-      expect(amount).tobe(2);
-
-      // decrease the amount of itens when fire the decrease button
-      const decreaseButton = await app.findByTestId("Decrease Button");
-      expect(decreaseButton).toBeInTheDocument();
-      fireEvent.click(decreaseButton);
-      expect(amount).toBe(1);
-
-      // unmount the SidebarItem component when decrease the amount of itens to 0
-      fireEvent.click(decreaseButton);
-      expect(sidebarItem).not.toBeInTheDocument();
-
-      fireEvent.click(button);
-      expect(sidebarItem).toBeInTheDocument();
-
-      // unmount the SidebarItem component when fire the clear button
-      const clearButton = await app.findByTestId("Clear Product");
-      expect(clearButton).toBeInTheDocument();
-      fireEvent.click(clearButton);
-      expect(sidebarItem).not.toBeInTheDocument();
-      expect(decreaseButton).not.toBeInTheDocument();
-      expect(increaseButton).not.toBeInTheDocument();
-      expect(clearButton).not.toBeInTheDocument();
-    });
+    const sidebar = app.getByTestId("sidebar");
+    const closeButton = app.getByTestId("closeSidebar");
+    fireEvent.click(closeButton);
+    expect(sidebar).not.toBeInTheDocument();
   });
 
-  it("Should close the sidebar when click the close button", async () => {
+  it("Should render a sidebar Item when fire the buy button", async () => {
     const cartDiv = await app.findByTestId("cartDiv");
     fireEvent.click(cartDiv);
-    const sidebar = await app.findByTestId("sidebar");
-    expect(sidebar).toBeInTheDocument();
-    const closeSidebar = await app.findByTestId("closeSidebar");
-    fireEvent.click(closeSidebar);
-    expect(sidebar).not.toBeInTheDocument();
+    const buyButton = await waitFor(() => app.getAllByTestId("buyButton")[1]);
+    fireEvent.click(buyButton);
+    const sidebarItem = await waitFor(
+      () => app.getAllByTestId("sidebarItem")[1]
+    );
+    expect(sidebarItem).toBeInTheDocument();
+  });
+
+  it("Should increase the amount of itens when fire the increase button", async () => {
+    const amount = await waitFor(() => app.getAllByTestId("amount")[1]);
+    expect(amount).toBeInTheDocument();
+    expect(amount.textContent).toBe("1");
+    const increaseButton = await waitFor(
+      () => app.getAllByTestId("Increase Button")[1]
+    );
+    expect(increaseButton).toBeInTheDocument();
+    fireEvent.click(increaseButton);
+    expect(amount.textContent).toBe("2");
+  });
+
+  it("Should decrease the amount of itens when fire the decrease button", async () => {
+    const amount = await waitFor(() => app.getAllByTestId("amount")[1]);
+    expect(amount.textContent).toBe("2");
+    const decreaseButton = await waitFor(
+      () => app.getAllByTestId("Decrease Button")[1]
+    );
+    expect(decreaseButton).toBeInTheDocument();
+    fireEvent.click(decreaseButton);
+    expect(amount.textContent).toBe("1");
+  });
+
+  it("Should unmount the SidebarItem component when the amount value decrease to 0", async () => {
+    const sidebarItem = await waitFor(
+      () => app.getAllByTestId("sidebarItem")[1]
+    );
+    expect(sidebarItem).toBeInTheDocument();
+    const amount = await waitFor(() => app.getAllByTestId("amount")[1]);
+    expect(amount.textContent).toBe("1");
+    const decreaseButton = await waitFor(
+      () => app.getAllByTestId("Decrease Button")[1]
+    );
+    fireEvent.click(decreaseButton);
+    expect(sidebarItem).not.toBeInTheDocument();
+    expect(amount).not.toBeInTheDocument();
+    expect(decreaseButton).not.toBeInTheDocument();
+  });
+
+  it("Should unmount the SidebarItem component when the fire the clear button", async () => {
+    const sidebarItem = await waitFor(
+      () => app.getAllByTestId("sidebarItem")[0]
+    );
+    expect(sidebarItem).toBeInTheDocument();
+    const clearButton = await waitFor(
+      () => app.getAllByTestId("Clear Product")[0]
+    );
+    fireEvent.click(clearButton);
+    expect(sidebarItem).not.toBeInTheDocument();
+    expect(clearButton).not.toBeInTheDocument();
+  });
+
+  it("Should sum the value of product to final value when click on the buy button, and sum again when click the increase button", async () => {
+    const buyButton = await waitFor(() => app.getAllByTestId("buyButton")[0]);
+    const totalPrice = app.getByTestId("totalPrice");
+    expect(totalPrice.textContent).toBe(`R$${Number(0)}`);
+    const cardItemPrice: HTMLElement = await waitFor(
+      () => app.getAllByTestId("cardItemPrice")[0]
+    );
+    fireEvent.click(buyButton);
+    const amount = await waitFor(() => app.getAllByTestId("amount")[0]);
+    const itemValue = getValueFromItem(
+      cardItemPrice.textContent ? cardItemPrice.textContent : undefined
+    );
+    expect(totalPrice.textContent).toBe(
+      `R$${itemValue * Number(amount.textContent)}`
+    );
+    const increaseButton = await waitFor(
+      () => app.getAllByTestId("Increase Button")[0]
+    );
+    expect(increaseButton).toBeInTheDocument();
+    fireEvent.click(increaseButton);
+    expect(totalPrice.textContent).toBe(
+      `R$${itemValue * Number(amount.textContent)}`
+    );
+  });
+
+  it("Should subtract the value of product to final value when click the decrease button", async () => {
+    const totalPrice = app.getByTestId("totalPrice");
+    const cardItemPrice = await waitFor(
+      () => app.getAllByTestId("cardItemPrice")[0]
+    );
+    let itemValue = getValueFromItem(
+      cardItemPrice.textContent ? cardItemPrice.textContent : undefined
+    );
+    const amount = await waitFor(() => app.getAllByTestId("amount")[0]);
+    expect(totalPrice.textContent).toBe(
+      `R$${itemValue * Number(amount.textContent)}`
+    );
+    const decreaseButton = await waitFor(
+      () => app.getAllByTestId("Decrease Button")[0]
+    );
+    expect(decreaseButton).toBeInTheDocument();
+    fireEvent.click(decreaseButton);
+    expect(totalPrice.textContent).toBe(
+      `R$${itemValue * Number(amount.textContent)}`
+    );
+    fireEvent.click(decreaseButton);
+    expect(totalPrice.textContent).toBe(`R$${0}`);
   });
 });

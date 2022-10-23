@@ -40,7 +40,7 @@ export default function Sidebar(): ReactElement {
       </div>
       <div className={styles.totalPrice}>
         <h1>Total:</h1>
-        <span>{`R$${totalPrice}`}</span>
+        <span data-testid="totalPrice">{`R$${totalPrice}`}</span>
       </div>
       <button className={styles.finalizar}>Finalizar Compra</button>
     </div>

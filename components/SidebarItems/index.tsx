@@ -49,7 +49,9 @@ export default function SidebarItems({
           </button>
         </div>
       </div>
-      <span className={styles.price}>{stringPrice}</span>
+      <span className={styles.price} data-testid="sidebarItemPrice">
+        {stringPrice}
+      </span>
       <span
         onClick={() => dispatch(clearProduct(product))}
         data-testid="Clear Product"

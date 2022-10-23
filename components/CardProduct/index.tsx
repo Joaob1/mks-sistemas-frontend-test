@@ -24,12 +24,15 @@ export default function CardProducts({
       />
       <div>
         <h1 className={styles.name}>{product.name}</h1>
-        <strong className={styles.price}>{stringPrice}</strong>
+        <strong className={styles.price} data-testid="cardItemPrice">
+          {stringPrice}
+        </strong>
       </div>
       <h4 className={styles.description}>{product.description}</h4>
       <button
         className={styles.comprar}
         onClick={() => dispatch(addProduct(product))}
+        data-testid="buyButton"
       >
         <Image src={shoppingBagIcon} alt="Comprar" />
         <span>COMPRAR</span>
